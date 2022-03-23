@@ -1,3 +1,5 @@
+import java.util.List;
+
 public class Game {
     private boolean gameOver;
     private Grille grid;
@@ -8,8 +10,20 @@ public class Game {
     public Game() {
         this.grid = new Grille();
         this.player1 = new Joueur(askPlayerName(1), askColor());
-        this.player2 = new Joueur(askPlayerName(2), askColor());
         this.gameOver = false;
+
+        String playerName2 = askPlayerName(2);
+        while (playerName2.equals(getPlayer1().getName())) {
+            System.out.printf("Le nom '%s' est déjà utilisé par le joueur 1\n", getPlayer1().getName());
+            playerName2 = askPlayerName(2);
+        }
+
+        EnumJeton playerColor2 = askColor();
+        while (playerColor2 == getPlayer1().getCouleurEquipe()) {
+            System.out.printf("La couleur '%s' est déjà utilisé par '%s'\n", getPlayer1().getCouleurEquipe(), getPlayer1().getName());
+            playerColor2 = askColor();
+        }
+        this.player2 = new Joueur(playerName2, playerColor2);
     }
 
     public boolean isGameOver() { return gameOver; }
@@ -41,50 +55,53 @@ public class Game {
     }
 
     private int askPlayedColumn() {
-        System.out.println("quelle colonne " + getPlayerTurn().getName() + " ?");
+        System.out.printf("%s, dans quelle colonne voulez vous jouer? ", getPlayerTurn().getName());
         int choix = -1;
         while (true) {
             try {
                 choix = Integer.parseInt(System.console().readLine());
                 if (choix < 0 || choix > 7) {
-                    System.out.println("La colonne doit être entre 1 et 7 compris");
+                    System.out.println("Veuillez choisir une colonne entre 1 et 7 compris");
                 } else if (getGrid().column_full(choix)) {
-                    System.out.println("colonne pleine. choississez-en une autre");
+                    System.out.println("Cette colonne est pleine, veuillez en choisir une autre");
                 } else {
                     break;
                 }
             } catch (Exception e) {
-                System.out.println("entrez un entier valide svp");
+                System.out.println("Veuillez entrer un entier valide");
             }
         }
         return choix;
     }
 
     private String askPlayerName(int num) {
-        System.out.printf("Donnez le nom du joueur %d : ", num);
+        System.out.printf("Veuillez donner le nom du joueur %d: ", num);
         while (true) {
             try {
                 String read = System.console().readLine();
                 return read;
             } catch (Exception e) {
-                System.out.println("Entrez un nom valide");
+                System.out.println("Veuillez entrer un nom valide");
             }
         }
     }
 
     private EnumJeton askColor() {
-        System.out.println("couleur jeton : ");
-        System.out.printf("[1] %s  [2] %s  [3] %s [4] %s", EnumJeton.ROUGE, EnumJeton.BLEU, EnumJeton.VERT, EnumJeton.JAUNE);
-        System.out.printf(" [5] %s  [6] %s  [7] %s ", EnumJeton.WHITE, EnumJeton.VIOLET, EnumJeton.CYAN);
+        System.out.println("Veuillez selectionner une couleur :");
+        List<EnumJeton> colors = EnumJeton.getValues();
+        for (int i = 0; i < colors.size(); i++) {
+            System.out.printf("[%d] %s ", i+1, colors.get(i));
+        }
+        System.out.println();
         while (true) {
             try {
-                EnumJeton color = EnumJeton.intToEquipe(Integer.parseInt(System.console().readLine()));
-                if (color == EnumJeton.VIDE) {
-                    System.out.println("Entrez une valeure entre 1 et 7 svp");
+                int input = Integer.parseInt(System.console().readLine());
+                if (input < 1 || input > colors.size()) {
+                    System.out.printf("Veuillez entrer une valeure entre 1 et %d\n", colors.size());
                 } else
-                    return color;
+                    return colors.get(input - 1);
             } catch (Exception e) {
-                System.out.println("entrez un entier valide svp");
+                System.out.println("Veuillez entrer un entier valide");
             }
         }
     }

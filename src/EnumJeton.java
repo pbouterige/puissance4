@@ -1,3 +1,9 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+
 public enum EnumJeton {
     ROUGE("\033[0;31m"),
     VERT("\033[0;32m"),
@@ -7,6 +13,8 @@ public enum EnumJeton {
     JAUNE("\033[0;33m"),
     WHITE("\033[0;37m"),
     VIDE("\033[0m");
+
+    private static final List<EnumJeton> VALUES;
     
     private final String color;
     private final String RESET = "\033[0m";
@@ -38,6 +46,25 @@ public enum EnumJeton {
             default:
                 return VIDE;
         }
+    }
+
+    public static Set<EnumJeton> getColorSet() {
+        Set<EnumJeton> colorSet = EnumSet.allOf(EnumJeton.class);
+        colorSet.remove(EnumJeton.VIDE);
+        return colorSet;
+    }
+    
+    static {
+        VALUES = new ArrayList<EnumJeton>();
+        for (EnumJeton jeton : EnumJeton.values()) {
+            if (jeton != EnumJeton.VIDE) {
+                VALUES.add(jeton);
+            }
+        }
+    }
+
+    public static List<EnumJeton> getValues() {
+        return Collections.unmodifiableList(VALUES);
     }
 
     @Override
