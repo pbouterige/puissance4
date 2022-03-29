@@ -10,49 +10,82 @@ public class Game {
 
     public Game() {
         this.grid = new Grille();
-        this.player1 = new Joueur(askPlayerName(1), askColor());
-        this.gameOver = false;
+        if (askChoice() == 2) {
+            this.player1 = new Joueur("", EnumJeton.VIDE);
+            this.player2 = new Joueur("", EnumJeton.VIDE);
 
-        String playerName2 = askPlayerName(2);
-        while (playerName2.equals(getPlayer1().getName())) {
-            System.out.printf("Le nom '%s' est déjà utilisé par le joueur 1\n", getPlayer1().getName());
-            playerName2 = askPlayerName(2);
-        }
+        } else {
+            this.player1 = new Joueur(askPlayerName(1), askColor());
+            this.gameOver = false;
 
-        EnumJeton playerColor2 = askColor();
-        while (playerColor2 == getPlayer1().getCouleurEquipe()) {
-            System.out.printf("La couleur '%s' est déjà utilisé par '%s'\n", getPlayer1().getCouleurEquipe(), getPlayer1().getName());
-            playerColor2 = askColor();
+            String playerName2 = askPlayerName(2);
+            while (playerName2.equals(getPlayer1().getName())) {
+                System.out.printf("Le nom '%s' est déjà utilisé par le joueur 1\n", getPlayer1().getName());
+                playerName2 = askPlayerName(2);
+            }
+
+            EnumJeton playerColor2 = askColor();
+            while (playerColor2 == getPlayer1().getCouleurEquipe()) {
+                System.out.printf("La couleur '%s' est déjà utilisé par '%s'\n", getPlayer1().getCouleurEquipe(),
+                        getPlayer1().getName());
+                playerColor2 = askColor();
+            }
+            this.player2 = new Joueur(playerName2, playerColor2);
         }
-        this.player2 = new Joueur(playerName2, playerColor2);
     }
 
-    public boolean isGameOver() { return gameOver; }
-    public void setGameOver(boolean gameOver) { this.gameOver = gameOver; }
+    public boolean isGameOver() {
+        return gameOver;
+    }
 
-    public Grille getGrid() { return grid; }
-    public void setGrid(Grille grid) { this.grid = grid; }
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
 
-    public Joueur getPlayer1() { return player1; }
-    public void setPlayer1(Joueur player1) { this.player1 = player1; }
+    public Grille getGrid() {
+        return grid;
+    }
 
-    public Joueur getPlayer2() { return player2; }
-    public void setPlayer2(Joueur player2) { this.player2 = player2; }
+    public void setGrid(Grille grid) {
+        this.grid = grid;
+    }
 
-    public Joueur getPlayerTurn() { return playerTurn; }
-    public void setPlayerTurn(Joueur playerTurn) { this.playerTurn = playerTurn; }
+    public Joueur getPlayer1() {
+        return player1;
+    }
+
+    public void setPlayer1(Joueur player1) {
+        this.player1 = player1;
+    }
+
+    public Joueur getPlayer2() {
+        return player2;
+    }
+
+    public void setPlayer2(Joueur player2) {
+        this.player2 = player2;
+    }
+
+    public Joueur getPlayerTurn() {
+        return playerTurn;
+    }
+
+    public void setPlayerTurn(Joueur playerTurn) {
+        this.playerTurn = playerTurn;
+    }
 
     public void gameLoop() {
         setPlayerTurn(getPlayer1());
         getGrid().afficheGrille();
-        while (!isGameOver()) {            
+        while (!isGameOver()) {
             int choix = askPlayedColumn();
             setGameOver(getGrid().update(getPlayerTurn().getCouleurEquipe(), choix));
             setPlayerTurn((getPlayerTurn() == getPlayer1()) ? getPlayer2() : getPlayer1());
 
             getGrid().afficheGrille();
         }
-        System.out.printf("%s a gagné la partie\n", (getPlayerTurn() == getPlayer1()) ? getPlayer2().getName() : getPlayer1().getName());
+        System.out.printf("%s a gagné la partie\n",
+                (getPlayerTurn() == getPlayer1()) ? getPlayer2().getName() : getPlayer1().getName());
         saveGame("file.txt");
     }
 
@@ -66,6 +99,24 @@ public class Game {
                     System.out.println("Veuillez choisir une colonne entre 1 et 7 compris");
                 } else if (getGrid().column_full(choix)) {
                     System.out.println("Cette colonne est pleine, veuillez en choisir une autre");
+                } else {
+                    break;
+                }
+            } catch (Exception e) {
+                System.out.println("Veuillez entrer un entier valide");
+            }
+        }
+        return choix;
+    }
+
+    private int askChoice() {
+        System.out.println("Voulez vous : \n [1] Creer une nouvelle partie \n [2] Charger une partie ");
+        int choix = -1;
+        while (true) {
+            try {
+                choix = Integer.parseInt(System.console().readLine());
+                if (choix < 1 || choix > 2) {
+                    System.out.println("Veuillez choisir une colonne entre 1 et 2 compris");
                 } else {
                     break;
                 }
@@ -92,7 +143,7 @@ public class Game {
         System.out.println("Veuillez selectionner une couleur :");
         List<EnumJeton> colors = EnumJeton.getValues();
         for (int i = 0; i < colors.size(); i++) {
-            System.out.printf("[%d] %s ", i+1, colors.get(i));
+            System.out.printf("[%d] %s ", i + 1, colors.get(i));
         }
         System.out.println();
         while (true) {
@@ -108,10 +159,6 @@ public class Game {
         }
     }
 
-    private String getGrilleString() {
-        return "";
-    }
-
     private void saveGame(String path) {
         try {
             FileWriter fw = new FileWriter(path);
@@ -119,7 +166,7 @@ public class Game {
             fw.write(getPlayer2().getDataToSave());
             fw.close();
         } catch (Exception e) {
-            
+
         }
     }
 }
