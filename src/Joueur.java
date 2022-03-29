@@ -25,6 +25,6 @@ public class Joueur {
     }
 
     public String getDataToSave() {
-        return String.format("%s %s\n", getName(), getCouleurEquipe());
+        return String.format("%s&sep&%s\n", getName(), EnumJeton.equipeToInt(getCouleurEquipe()));
     }
 }

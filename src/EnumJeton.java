@@ -48,6 +48,27 @@ public enum EnumJeton {
         }
     }
 
+    public static int equipeToInt(EnumJeton a) {
+        switch (a) {
+            case ROUGE:
+                return 1;
+            case BLEU:
+                return 2;
+            case VERT:
+                return 3;
+            case JAUNE:
+                return 4;
+            case BLANC:
+                return 5;
+            case VIOLET:
+                return 6;
+            case CYAN:
+                return 7;
+            default:
+                return 0;
+        }
+    }
+
     public static EnumJeton stringToEquipe(String a) {
         switch (a) {
             case "\033[0;31m":
@@ -65,6 +86,7 @@ public enum EnumJeton {
             case "\033[0;37m":
                 return CYAN;
             default:
+                System.err.println("Caca");
                 return VIDE;
         }
     }

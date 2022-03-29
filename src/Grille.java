@@ -48,31 +48,33 @@ public class Grille {
         }
     }
 
-    private void afficheLigne(Cellule c) {
+    private String getLineString(Cellule c) {
+        String line = new String();
         for (int i = 0; i < NUMBER_OF_COLUMNS; i++) {
-            System.out.print(c.getCouleur() + " ");
+            line += c.getCouleur() + ((i != NUMBER_OF_COLUMNS - 1) ? " " : "");
             Optional<Cellule> tmp2 = c.getVoisin(EnumDirection.DROITE);
             if (tmp2.isPresent()) {
                 c = tmp2.get();
             }
         }
-        System.out.println();
+        return line;
     }
 
-    public void afficheGrille() {
+    public String getGridString() {
         Cellule tmp = this.upLeft;
+        String grid = new String();
         for (int i = 0; i < NUMBER_OF_ROWS; i++) {
-            afficheLigne(tmp);
+            grid += getLineString(tmp) + "\n";
             Optional<Cellule> tmp2 = tmp.getVoisin(EnumDirection.BAS);
             if (tmp2.isPresent()) {
                 tmp = tmp2.get();
             }
         }
+        return grid;
     }
 
     public boolean update(EnumJeton e, int choix) {
         indexTab[choix - 1].setCouleur(e);
-        System.out.println(indexTab[choix - 1].getCouleur());
         Optional<Cellule> tmp2 = indexTab[choix - 1].getVoisin(EnumDirection.HAUT);
         boolean win = indexTab[choix - 1].check();
         if (tmp2.isPresent())

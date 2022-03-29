@@ -1,4 +1,6 @@
+import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.*;
 import java.util.List;
 
 public class Game {
@@ -44,13 +46,14 @@ public class Game {
 
     public void gameLoop() {
         setPlayerTurn(getPlayer1());
-        getGrid().afficheGrille();
+        System.out.printf(grid.getGridString());
+        loadGame("file.txt");
         while (!isGameOver()) {            
             int choix = askPlayedColumn();
             setGameOver(getGrid().update(getPlayerTurn().getCouleurEquipe(), choix));
             setPlayerTurn((getPlayerTurn() == getPlayer1()) ? getPlayer2() : getPlayer1());
 
-            getGrid().afficheGrille();
+            System.out.printf(grid.getGridString());
         }
         System.out.printf("%s a gagné la partie\n", (getPlayerTurn() == getPlayer1()) ? getPlayer2().getName() : getPlayer1().getName());
         saveGame("file.txt");
@@ -109,6 +112,7 @@ public class Game {
     }
 
     private String getGrilleString() {
+        String grille = new String();
         return "";
     }
 
@@ -117,9 +121,23 @@ public class Game {
             FileWriter fw = new FileWriter(path);
             fw.write(getPlayer1().getDataToSave());
             fw.write(getPlayer2().getDataToSave());
+            fw.write(grid.getGridString());
             fw.close();
         } catch (Exception e) {
-            
+            System.err.println("Sauvegarde impossible!");
+        }
+    }
+
+    private void loadGame(String path) {
+        try {
+            String file = new String(Files.readAllBytes(Paths.get(path)));
+            String[] lines = file.split("\n");
+            String[] cols = lines[0].split("&sep&");
+            this.player1.setName(cols[0]);
+            this.player1.setCouleurEquipe(EnumJeton.intToEquipe(Integer.parseInt(cols[1])));
+            System.out.println(player1.getDataToSave());
+        } catch (Exception e) {
+            System.err.println(e);
         }
     }
 }
