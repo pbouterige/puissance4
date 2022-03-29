@@ -48,6 +48,37 @@ public class Grille {
         }
     }
 
+    public Grille(String[] gridString) {
+        Cellule[] tmp = new Cellule[NUMBER_OF_COLUMNS];
+        this.indexTab = new Cellule[NUMBER_OF_COLUMNS];
+        Arrays.fill(tmp, null);
+
+        for (int i = 0; i < NUMBER_OF_ROWS; i++) {
+            Cellule prevLeft = null;
+            String[] line = gridString[i].split(" ");
+            for (int j = 0; j < NUMBER_OF_COLUMNS; j++) {
+                String celluleString = line[j];
+                Cellule cell = new Cellule();
+                cell.setCouleur(EnumJeton.intToEquipe(Integer.parseInt(celluleString)));
+                cell.link(null, EnumDirection.BAS);
+                cell.link(prevLeft, EnumDirection.GAUCHE);
+                cell.link(tmp[j], EnumDirection.HAUT);
+                cell.link(null, EnumDirection.DROITE);
+                prevLeft = cell;
+                tmp[j] = cell;
+                if (i == 0) {
+                    this.indexTab[j] = cell;
+                    if (j == 0) {
+                        this.upLeft = cell;
+                    }
+                }
+                if (i == this.NUMBER_OF_ROWS-1 && j == 0) {
+                    this.firstCell = cell;
+                }
+            }
+        }
+    }
+
     private String getLineString(Cellule c) {
         String line = new String();
         for (int i = 0; i < NUMBER_OF_COLUMNS; i++) {

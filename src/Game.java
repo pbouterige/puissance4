@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.*;
+import java.util.Arrays;
 import java.util.List;
 
 public class Game {
@@ -13,8 +14,6 @@ public class Game {
     public Game() {
         this.grid = new Grille();
         if (askChoice() == 2) {
-            this.player1 = new Joueur("", EnumJeton.VIDE);
-            this.player2 = new Joueur("", EnumJeton.VIDE);
             loadGame("file.txt");
         } else {
             this.player1 = new Joueur(askPlayerName(1), askColor());
@@ -173,14 +172,17 @@ public class Game {
         }
     }
 
-    private void loadGame(String path) {
+    private void loadGame(String path) throws Exception{
         try {
             String file = new String(Files.readAllBytes(Paths.get(path)));
             String[] lines = file.split("\n");
+
             String[] cols = lines[0].split("&sep&");
-            this.player1.setName(cols[0]);
-            this.player1.setCouleurEquipe(EnumJeton.intToEquipe(Integer.parseInt(cols[1])));
-            System.out.println(player1.getDataToSave());
+            this.player1 = new Joueur(cols[0], EnumJeton.intToEquipe(Integer.parseInt(cols[1])));
+            cols = lines[1].split("&sep&");
+            this.player2 = new Joueur(cols[1], EnumJeton.intToEquipe(Integer.parseInt(cols[1])));
+            
+            this.grid = new Grille(Arrays.copyOfRange(lines, 2, lines.length));
         } catch (Exception e) {
             System.err.println(e);
         }
