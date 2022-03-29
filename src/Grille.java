@@ -66,8 +66,10 @@ public class Grille {
                 cell.link(null, EnumDirection.DROITE);
                 prevLeft = cell;
                 tmp[j] = cell;
-                if (i == 0) {
+                if (cell.getCouleur() == EnumJeton.VIDE) {
                     this.indexTab[j] = cell;
+                }
+                if (i == 0) {
                     if (j == 0) {
                         this.upLeft = cell;
                     }
@@ -82,7 +84,19 @@ public class Grille {
     private String getLineString(Cellule c) {
         String line = new String();
         for (int i = 0; i < NUMBER_OF_COLUMNS; i++) {
-            line += c.getCouleur() + ((i != NUMBER_OF_COLUMNS - 1) ? " " : "");
+            line += c + ((i != NUMBER_OF_COLUMNS - 1) ? " " : "");
+            Optional<Cellule> tmp2 = c.getVoisin(EnumDirection.DROITE);
+            if (tmp2.isPresent()) {
+                c = tmp2.get();
+            }
+        }
+        return line;
+    }
+
+    private String getLineInt(Cellule c) {
+        String line = new String();
+        for (int i = 0; i < NUMBER_OF_COLUMNS; i++) {
+            line += EnumJeton.equipeToInt(c.getCouleur()) + ((i != NUMBER_OF_COLUMNS - 1) ? " " : "");
             Optional<Cellule> tmp2 = c.getVoisin(EnumDirection.DROITE);
             if (tmp2.isPresent()) {
                 c = tmp2.get();
@@ -96,6 +110,19 @@ public class Grille {
         String grid = new String();
         for (int i = 0; i < NUMBER_OF_ROWS; i++) {
             grid += getLineString(tmp) + "\n";
+            Optional<Cellule> tmp2 = tmp.getVoisin(EnumDirection.BAS);
+            if (tmp2.isPresent()) {
+                tmp = tmp2.get();
+            }
+        }
+        return grid;
+    }
+
+    public String getGridInt() {
+        Cellule tmp = this.upLeft;
+        String grid = new String();
+        for (int i = 0; i < NUMBER_OF_ROWS; i++) {
+            grid += getLineInt(tmp) + "\n";
             Optional<Cellule> tmp2 = tmp.getVoisin(EnumDirection.BAS);
             if (tmp2.isPresent()) {
                 tmp = tmp2.get();

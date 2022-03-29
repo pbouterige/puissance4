@@ -17,7 +17,11 @@ public enum EnumJeton {
     private static final List<EnumJeton> VALUES;
 
     private final String color;
-    private final String RESET = "\033[0m";
+    public static final String RESET = "\033[0m";
+
+    private String getRESET() {
+        return RESET;
+    }
 
     private EnumJeton(String colorString) {
         this.color = colorString;
@@ -112,9 +116,6 @@ public enum EnumJeton {
 
     @Override
     public String toString() {
-        if (this == VIDE) {
-            return "○";
-        }
-        return this.getColor() + "●" + this.RESET;
+        return this.getColor();
     }
 }

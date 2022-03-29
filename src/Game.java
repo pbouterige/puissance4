@@ -154,7 +154,7 @@ public class Game {
         System.out.println("Veuillez selectionner une couleur :");
         List<EnumJeton> colors = EnumJeton.getValues();
         for (int i = 0; i < colors.size(); i++) {
-            System.out.printf("[%d] %s ", i + 1, colors.get(i));
+            System.out.printf("[%d] %s ", i + 1, colors.get(i) + "●" + EnumJeton.RESET);
         }
         System.out.println();
         while (true) {
@@ -175,7 +175,7 @@ public class Game {
             FileWriter fw = new FileWriter(path);
             fw.write(getPlayer1().getDataToSave());
             fw.write(getPlayer2().getDataToSave());
-            fw.write(grid.getGridString());
+            fw.write(grid.getGridInt());
             fw.close();
         } catch (Exception e) {
             System.err.println("Sauvegarde impossible!");

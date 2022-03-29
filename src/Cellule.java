@@ -78,4 +78,12 @@ public class Cellule {
         }
         return 0;
     }
+
+    @Override
+    public String toString() {
+        if (this.getCouleur() == EnumJeton.VIDE) {
+            return "○";
+        }
+        return this.getCouleur() + "●" + EnumJeton.RESET;
+    }
 }
