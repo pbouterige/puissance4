@@ -1,4 +1,3 @@
-import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.*;
 import java.util.Arrays;
@@ -91,13 +90,24 @@ public class Game {
     }
 
     private int askPlayedColumn() {
-        System.out.printf("%s, dans quelle colonne voulez vous jouer? ", getPlayerTurn().getName());
+        System.out.printf("%s, dans quelle colonne voulez vous jouer?                                (42 to save)\n",
+                getPlayerTurn().getName());
         int choix = -1;
         while (true) {
             try {
                 choix = Integer.parseInt(System.console().readLine());
                 if (choix < 0 || choix > 7) {
-                    System.out.println("Veuillez choisir une colonne entre 1 et 7 compris");
+                    if (choix == 42) {
+                        System.out.println("Le nom de votre sauvegarde ?");
+                        String name = new String("");
+                        name = "sauvegarde/" + System.console().readLine() + ".txt";
+                        saveGame(name);
+                        System.out.printf(
+                                "%s, dans quelle colonne voulez vous jouer?                                (42 to save)\n",
+                                getPlayerTurn().getName());
+                    } else {
+                        System.out.println("Veuillez choisir une colonne entre 1 et 7 compris");
+                    }
                 } else if (getGrid().column_full(choix)) {
                     System.out.println("Cette colonne est pleine, veuillez en choisir une autre");
                 } else {
