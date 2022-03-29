@@ -1,5 +1,6 @@
 import java.io.FileWriter;
 import java.nio.file.*;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,9 +13,17 @@ public class Game {
 
     public Game() {
         this.grid = new Grille();
-        if (askChoice() == 2) {
-            loadGame("file.txt");
-        } else {
+        int a = askChoice();
+        if (a == 2) {
+            File file = new File("sauvegarde.txt");
+            if (file.length() == 0) {
+                System.out.println("Pas de sauvegarde pour l'instant désolé");
+                a = 1;
+            } else {
+                loadGame("sauvegarde.txt");
+            }
+        }
+        if (a == 1) {
             this.player1 = new Joueur(askPlayerName(1), askColor());
             this.gameOver = false;
 
@@ -98,10 +107,7 @@ public class Game {
                 choix = Integer.parseInt(System.console().readLine());
                 if (choix < 0 || choix > 7) {
                     if (choix == 42) {
-                        System.out.println("Le nom de votre sauvegarde ?");
-                        String name = new String("");
-                        name = "sauvegarde/" + System.console().readLine() + ".txt";
-                        saveGame(name);
+                        saveGame("sauvegarde.txt");
                         System.out.printf(
                                 "%s, dans quelle colonne voulez vous jouer?                                (42 to save)\n",
                                 getPlayerTurn().getName());
@@ -191,7 +197,7 @@ public class Game {
             this.player1 = new Joueur(cols[0], EnumJeton.intToEquipe(Integer.parseInt(cols[1])));
             cols = lines[1].split("&sep&");
             this.player2 = new Joueur(cols[1], EnumJeton.intToEquipe(Integer.parseInt(cols[1])));
-            
+
             this.grid = new Grille(Arrays.copyOfRange(lines, 2, lines.length));
         } catch (Exception e) {
             System.err.println(e);
