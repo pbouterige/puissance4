@@ -1,3 +1,4 @@
+import java.io.FileWriter;
 import java.util.List;
 
 public class Game {
@@ -52,6 +53,7 @@ public class Game {
             getGrid().afficheGrille();
         }
         System.out.printf("%s a gagné la partie\n", (getPlayerTurn() == getPlayer1()) ? getPlayer2().getName() : getPlayer1().getName());
+        saveGame("file.txt");
     }
 
     private int askPlayedColumn() {
@@ -103,6 +105,21 @@ public class Game {
             } catch (Exception e) {
                 System.out.println("Veuillez entrer un entier valide");
             }
+        }
+    }
+
+    private String getGrilleString() {
+        return "";
+    }
+
+    private void saveGame(String path) {
+        try {
+            FileWriter fw = new FileWriter(path);
+            fw.write(getPlayer1().getDataToSave());
+            fw.write(getPlayer2().getDataToSave());
+            fw.close();
+        } catch (Exception e) {
+            
         }
     }
 }

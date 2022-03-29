@@ -24,4 +24,7 @@ public class Joueur {
         this.couleurEquipe = couleurEquipe;
     }
 
+    public String getDataToSave() {
+        return String.format("%s %s\n", getName(), getCouleurEquipe());
+    }
 }
