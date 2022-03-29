@@ -182,7 +182,7 @@ public class Game {
         }
     }
 
-    private void loadGame(String path) throws Exception{
+    private void loadGame(String path) {
         try {
             String file = new String(Files.readAllBytes(Paths.get(path)));
             String[] lines = file.split("\n");
