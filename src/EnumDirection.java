@@ -1,10 +1,10 @@
 public enum EnumDirection {
-    BAS,
-    GAUCHE,
-    HAUT,
-    DROITE;
+    DOWN,
+    LEFT,
+    UP,
+    RIGHT;
 
-    public EnumDirection getOposeDirection() {
-        return (this == BAS) ? HAUT : (this == HAUT) ? BAS : (this == GAUCHE) ? DROITE : GAUCHE;
+    public EnumDirection getOposedDirection() {
+        return (this == DOWN) ? UP : (this == UP) ? DOWN : (this == LEFT) ? RIGHT : LEFT;
     }
 }

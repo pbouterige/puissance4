@@ -1,45 +1,46 @@
 import java.io.FileWriter;
 import java.nio.file.*;
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
 public class Game {
     private boolean gameOver;
-    private Grille grid;
-    private Joueur player1;
-    private Joueur player2;
-    private Joueur playerTurn;
+    private Grid grid;
+    private Player player1;
+    private Player player2;
+    private Player playerTurn;
 
     public Game() {
-        this.grid = new Grille();
+        this.grid = new Grid();
         int a = askChoice();
         if (a == 2) {
-            File file = new File("sauvegarde.txt");
-            if (file.length() == 0) {
-                System.out.println("Pas de sauvegarde pour l'instant désolé");
-                a = 1;
-            } else {
+            try {
                 loadGame("sauvegarde.txt");
+            } catch (Exception e) {
+                System.out.println("Pas de sauvegarde disponible");
+                a = 1;
             }
         }
         if (a == 1) {
-            this.player1 = new Joueur(askPlayerName(1), askColor());
+            System.out.println("\033[H\033[2J");
+            this.player1 = new Player(askPlayerName(1), askColor());
             this.gameOver = false;
 
+            System.out.println("\033[H\033[2J");
             String playerName2 = askPlayerName(2);
             while (playerName2.equals(getPlayer1().getName())) {
                 System.out.printf("Le nom '%s' est déjà utilisé par le joueur 1\n", getPlayer1().getName());
                 playerName2 = askPlayerName(2);
             }
 
-            EnumJeton playerColor2 = askColor();
-            while (playerColor2 == getPlayer1().getCouleurEquipe()) {
-                System.out.printf("La couleur '%s' est déjà utilisé par '%s'\n", getPlayer1().getCouleurEquipe(),
+            EnumColor playerColor2 = askColor();
+            while (playerColor2 == getPlayer1().getColor()) {
+                System.out.printf("La couleur '%s' est déjà utilisé par '%s'\n", getPlayer1().getColor(),
                         getPlayer1().getName());
                 playerColor2 = askColor();
             }
-            this.player2 = new Joueur(playerName2, playerColor2);
+            this.player2 = new Player(playerName2, playerColor2);
+            setPlayerTurn(getPlayer1());
         }
     }
 
@@ -51,55 +52,55 @@ public class Game {
         this.gameOver = gameOver;
     }
 
-    public Grille getGrid() {
+    public Grid getGrid() {
         return grid;
     }
 
-    public void setGrid(Grille grid) {
+    public void setGrid(Grid grid) {
         this.grid = grid;
     }
 
-    public Joueur getPlayer1() {
+    public Player getPlayer1() {
         return player1;
     }
 
-    public void setPlayer1(Joueur player1) {
+    public void setPlayer1(Player player1) {
         this.player1 = player1;
     }
 
-    public Joueur getPlayer2() {
+    public Player getPlayer2() {
         return player2;
     }
 
-    public void setPlayer2(Joueur player2) {
+    public void setPlayer2(Player player2) {
         this.player2 = player2;
     }
 
-    public Joueur getPlayerTurn() {
+    public Player getPlayerTurn() {
         return playerTurn;
     }
 
-    public void setPlayerTurn(Joueur playerTurn) {
+    public void setPlayerTurn(Player playerTurn) {
         this.playerTurn = playerTurn;
     }
 
     public void gameLoop() {
-        setPlayerTurn(getPlayer1());
-        System.out.printf(grid.getGridString());
+        System.out.println("\033[H\033[2J");
+        System.out.printf(grid.getGridAsString());
         while (!isGameOver()) {
             int choix = askPlayedColumn();
-            setGameOver(getGrid().update(getPlayerTurn().getCouleurEquipe(), choix));
+            setGameOver(getGrid().updateGrid(getPlayerTurn().getColor(), choix));
             setPlayerTurn((getPlayerTurn() == getPlayer1()) ? getPlayer2() : getPlayer1());
 
-            System.out.printf(grid.getGridString());
+            System.out.println("\033[H\033[2J");
+            System.out.printf(grid.getGridAsString());
         }
         System.out.printf("%s a gagné la partie\n",
                 (getPlayerTurn() == getPlayer1()) ? getPlayer2().getName() : getPlayer1().getName());
-        saveGame("file.txt");
     }
 
     private int askPlayedColumn() {
-        System.out.printf("%s, dans quelle colonne voulez vous jouer?                                (42 to save)\n",
+        System.out.printf("%s, dans quelle colonne voulez vous jouer?                                (42 to save & quit)\n",
                 getPlayerTurn().getName());
         int choix = -1;
         while (true) {
@@ -108,13 +109,11 @@ public class Game {
                 if (choix < 0 || choix > 7) {
                     if (choix == 42) {
                         saveGame("sauvegarde.txt");
-                        System.out.printf(
-                                "%s, dans quelle colonne voulez vous jouer?                                (42 to save)\n",
-                                getPlayerTurn().getName());
+                        System.exit(0);
                     } else {
                         System.out.println("Veuillez choisir une colonne entre 1 et 7 compris");
                     }
-                } else if (getGrid().column_full(choix)) {
+                } else if (getGrid().isColumnFull(choix)) {
                     System.out.println("Cette colonne est pleine, veuillez en choisir une autre");
                 } else {
                     break;
@@ -156,11 +155,11 @@ public class Game {
         }
     }
 
-    private EnumJeton askColor() {
+    private EnumColor askColor() {
         System.out.println("Veuillez selectionner une couleur :");
-        List<EnumJeton> colors = EnumJeton.getValues();
+        List<EnumColor> colors = EnumColor.getValues();
         for (int i = 0; i < colors.size(); i++) {
-            System.out.printf("[%d] %s ", i + 1, colors.get(i) + "●" + EnumJeton.RESET);
+            System.out.printf("[%d] %s ", i + 1, colors.get(i) + "●" + EnumColor.RESET);
         }
         System.out.println();
         while (true) {
@@ -181,26 +180,29 @@ public class Game {
             FileWriter fw = new FileWriter(path);
             fw.write(getPlayer1().getDataToSave());
             fw.write(getPlayer2().getDataToSave());
-            fw.write(grid.getGridInt());
+            fw.write(((getPlayerTurn() == getPlayer1()) ? "1" : "2") + "\n");
+            fw.write(grid.getGridAsInt());
             fw.close();
         } catch (Exception e) {
             System.err.println("Sauvegarde impossible!");
         }
     }
 
-    private void loadGame(String path) {
+    private void loadGame(String path) throws Exception {
         try {
             String file = new String(Files.readAllBytes(Paths.get(path)));
             String[] lines = file.split("\n");
 
             String[] cols = lines[0].split("&sep&");
-            this.player1 = new Joueur(cols[0], EnumJeton.intToEquipe(Integer.parseInt(cols[1])));
+            this.player1 = new Player(cols[0], EnumColor.intToColor(Integer.parseInt(cols[1])));
             cols = lines[1].split("&sep&");
-            this.player2 = new Joueur(cols[1], EnumJeton.intToEquipe(Integer.parseInt(cols[1])));
+            this.player2 = new Player(cols[0], EnumColor.intToColor(Integer.parseInt(cols[1])));
+            String pTurn = lines[2];
+            this.playerTurn = pTurn.equals("1") ? getPlayer1() : getPlayer2();
 
-            this.grid = new Grille(Arrays.copyOfRange(lines, 2, lines.length));
+            this.grid = new Grid(Arrays.copyOfRange(lines, 3, lines.length));
         } catch (Exception e) {
-            System.err.println(e);
+            throw e;
         }
     }
 }
