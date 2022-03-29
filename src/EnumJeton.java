@@ -11,11 +11,11 @@ public enum EnumJeton {
     VIOLET("\033[0;35m"),
     CYAN("\033[0;36m"),
     JAUNE("\033[0;33m"),
-    WHITE("\033[0;37m"),
+    BLANC("\033[0;37m"),
     VIDE("\033[0m");
 
     private static final List<EnumJeton> VALUES;
-    
+
     private final String color;
     private final String RESET = "\033[0m";
 
@@ -38,10 +38,31 @@ public enum EnumJeton {
             case 4:
                 return JAUNE;
             case 5:
-                return WHITE;
+                return BLANC;
             case 6:
                 return VIOLET;
             case 7:
+                return CYAN;
+            default:
+                return VIDE;
+        }
+    }
+
+    public static EnumJeton stringToEquipe(String a) {
+        switch (a) {
+            case "\033[0;31m":
+                return ROUGE;
+            case "\033[0;32m":
+                return BLEU;
+            case "\033[0;34m":
+                return VERT;
+            case "\033[0;35m":
+                return JAUNE;
+            case "\033[0;36m":
+                return BLANC;
+            case "\033[0;33m":
+                return VIOLET;
+            case "\033[0;37m":
                 return CYAN;
             default:
                 return VIDE;
@@ -53,7 +74,7 @@ public enum EnumJeton {
         colorSet.remove(EnumJeton.VIDE);
         return colorSet;
     }
-    
+
     static {
         VALUES = new ArrayList<EnumJeton>();
         for (EnumJeton jeton : EnumJeton.values()) {
